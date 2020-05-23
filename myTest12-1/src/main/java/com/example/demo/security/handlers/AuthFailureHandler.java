@@ -46,7 +46,7 @@ public class AuthFailureHandler implements AuthenticationFailureHandler {
 			if(securityService.getSelectMemberInfo(id)!=null) { //바로 위에서 만든 id (user_id 컬럼 아님)
 				loginLog.setLoginIp(ip);
 				loginLog.setUser_id(id);	//바로 위에서 만든 id (user_id 컬럼 아님)
-				loginLog.setStatus("FAILED");
+//				loginLog.setStatus("FAILED");
 				securityService.setInsertLoginLog(loginLog);   //  오류! 원인 분석 필요!!! (근데 securityService에 이 메소드가 없음)
 				//근데 loginLogVo 자체도 vo에는 user_id나 status도 없는데 넣어도 되나...? 어떻게 set이 되는 거지?
 				//테이블 때문인가? (mapper?) 근데 테이블도 사실상 존재하지 않음... 향후 문제 발생 가능성 있음

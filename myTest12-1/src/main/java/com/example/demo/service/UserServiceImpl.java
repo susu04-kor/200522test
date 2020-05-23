@@ -35,25 +35,22 @@ public class UserServiceImpl implements SecurityService {
 	
 	
 	@Override
-	public UserDetails loadUserByUsername(String user_id) throws UsernameNotFoundException{
-		MemberInfoVo memberInfo = loginMapperDao.getSelectMemberInfo(user_id);
-		System.out.println(user_id+"........loadUserByUsername");
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException{
+MemberInfoVo memberInfo = loginMapperDao.getSelectMemberInfo(username); 
+	    
+		System.out.println(username+"........loadUserByUsername");
 		System.out.println("memberInfoVo===>"+memberInfo);
 	
 		if(memberInfo==null) {	//throw = 예외 강제 발생 메소드
-			throw new UsernameNotFoundException(user_id);
+			throw new UsernameNotFoundException(username);
 		}
-		List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-		authorities.add(new SimpleGrantedAuthority(memberInfo.getUser_role()));
 		
-		MemberInfoVo member = new MemberInfoVo(memberInfo.getUser_id(), memberInfo.getPwd(), 
-				memberInfo.getTel(), memberInfo.getBirth(), memberInfo.getName(), 
-				memberInfo.getAddress(), memberInfo.getGender(), memberInfo.getFname(), 
-				memberInfo.getIntro(), memberInfo.getInfo_create_date(), 
-				memberInfo.getInfo_create_date(), memberInfo.getNick_name(), 
-				memberInfo.getUser_role(), memberInfo.getEmail(), memberInfo.getPwd2(), authorities);
-	
-		return member;
+		MemberInfoVo2 member2 = new MemberInfoVo2(memberInfo);
+
+//		member2.getAuthorities();
+		
+		System.out.println(member2);
+		return member2;
 		
 		/*		
 		if(memberInfo==null) {	//throw = 예외 강제 발생 메소드

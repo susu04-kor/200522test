@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class LoginLogVo extends MemberInfoVo2 {
+public class LoginLogVo extends MemberInfoVo {
 	
 	private String loginIp;
 	private String loginDate;
