@@ -14,7 +14,7 @@
  		update member_info set tel=#{tel}, name=#{name},
  		address=#{address}, gender=#{gender}, intro=#{intro}, info_update_date = sysdate,
  		nick_name=#{nick_name}, fname=#{fname}
- 		 where user_id = #{user_id} and pwd = #{pwd}
+ 		 where user_id = #{user_id} <!--  and pwd = #{pwd} -->
  	</update>
  	
 <!--  	반려동물 등록 -->
@@ -88,4 +88,7 @@
 	<select id="search_pay" resultType="com.example.demo.vo.PaymentVo">
 		select * from payment where user_id = #{user_id}
 	</select>
+	
+
+	
 </mapper>

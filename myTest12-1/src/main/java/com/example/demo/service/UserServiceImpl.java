@@ -91,12 +91,20 @@ MemberInfoVo memberInfo = loginMapperDao.getSelectMemberInfo(username);
 	public int nickCheck(String nick_name) throws Exception {
 		return loginMapperDao.nickCheck(nick_name);
 	}
-	//회원수정
+	
+	//비밀번호 확인
 	@Override
-	public int memberUpdate(MemberInfoVo memberInfo) throws Exception {
-		return loginMapperDao.memberUpdate(memberInfo);
+	public int passCheck(MemberInfoVo memberInfo) throws Exception {
+		return loginMapperDao.passCheck(memberInfo);
 	}
-
+	//회원정보 수정
+	@Override
+	public int update_myinfo(MemberInfoVo memberInfo) throws Exception {
+		return loginMapperDao.setInsertMemberInfo(memberInfo);
+	}
+	
+		
+	
 	
 
 }

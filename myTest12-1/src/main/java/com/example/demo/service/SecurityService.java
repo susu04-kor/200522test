@@ -22,8 +22,11 @@ public interface SecurityService extends UserDetailsService {
 	int idCheck(String user_id) throws Exception;
 	//중복 닉네임 체크
 	int nickCheck(String nick_name) throws Exception;
+	//비밀번호 확인
+	int passCheck(MemberInfoVo memberInfo) throws Exception;
 	//회원정보 수정
-	public int memberUpdate(MemberInfoVo memberInfo) throws Exception;
+	public int update_myinfo(MemberInfoVo memberInfo) throws Exception;
+	
 	
 	
 }

@@ -19,6 +19,10 @@ public interface LoginMapperDao {
 	public int idCheck(String user_id);
 	//닉네임 중복 확인
 	public int nickCheck(String nick_name);
+	//비밀번호 확인
+	public int passCheck(MemberInfoVo memberInfo);
 	//회원정보 수정
-	public int memberUpdate(MemberInfoVo memberInfo);
+	public int update_myinfo(MemberInfoVo memberInfo);
+
 }
+

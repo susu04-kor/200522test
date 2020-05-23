@@ -47,11 +47,7 @@ public class MyPageController {
 		HttpSession session = request.getSession();
 	    Authentication authentication = (Authentication) session.getAttribute("user");
 	    MemberInfoVo user = (MemberInfoVo) authentication.getPrincipal();
-	    System.out.println(user.getUser_id());
-		
 		MemberInfoVo m = loginMapperDao.getSelectMemberInfo(user.getUser_id());
-		System.out.println("myPage 메인: " + m);
-
 		
 		ModelAndView mav = new ModelAndView();
 		mav.setViewName("/mypage/main");
@@ -87,11 +83,8 @@ public class MyPageController {
 		HttpSession session = request.getSession();
 	    Authentication authentication = (Authentication) session.getAttribute("user");
 	    MemberInfoVo user = (MemberInfoVo) authentication.getPrincipal();
-	    System.out.println(user.getUser_id());
-		
 		MemberInfoVo m = loginMapperDao.getSelectMemberInfo(user.getUser_id());
-		System.out.println("myPage 반려동물 관리폼: " + m);
-		
+
 		m.setUser_id(user.getUser_id());
 		ModelAndView mav = new ModelAndView();
 		mav.setViewName("/mypage/animal_info");
@@ -111,10 +104,7 @@ public class MyPageController {
 		HttpSession session = request.getSession();
 	    Authentication authentication = (Authentication) session.getAttribute("user");
 	    MemberInfoVo user = (MemberInfoVo) authentication.getPrincipal();
-	    System.out.println(user.getUser_id());
-		
 		MemberInfoVo m = loginMapperDao.getSelectMemberInfo(user.getUser_id());
-		System.out.println("myPage 반려동물 등록: " + m);
 		
 		m.setUser_id(user.getUser_id());
 	
@@ -155,6 +145,7 @@ public class MyPageController {
 		
 		return "redirect:/mypage/animal_info_up_form?user_id="+m.getUser_id();
 	}
+
 	
 	//사람 정보 수정 폼
 	@NoLogging
@@ -162,11 +153,8 @@ public class MyPageController {
 	public ModelAndView people_info_up_form(HttpServletRequest request) {
 		HttpSession session = request.getSession();
 	    Authentication authentication = (Authentication) session.getAttribute("user");
-	    MemberInfoVo user = (MemberInfoVo) authentication.getPrincipal();
-	    System.out.println(user.getUser_id());
-		
+	    MemberInfoVo user = (MemberInfoVo) authentication.getPrincipal();		
 		MemberInfoVo m = loginMapperDao.getSelectMemberInfo(user.getUser_id());
-		System.out.println("myPage 사람 정보 수정 폼: " + m);
 		
 		ModelAndView mav = new ModelAndView();
 		m.setUser_id(user.getUser_id());
@@ -177,17 +165,16 @@ public class MyPageController {
 	
 	//사람 정보 수정
 	@RequestMapping(value = "/mypage/people_info_up", method = RequestMethod.POST)
-	public String people_info_up(HttpServletRequest request, MultipartFile aa) {
+	public String people_info_up(HttpServletRequest request, MultipartFile aa, MemberInfoVo m) {
 		HttpSession session = request.getSession();
 	    Authentication authentication = (Authentication) session.getAttribute("user");
-	    MemberInfoVo user = (MemberInfoVo) authentication.getPrincipal();
-	    System.out.println(user.getUser_id());
-		
-		MemberInfoVo m = loginMapperDao.getSelectMemberInfo(user.getUser_id());
-		System.out.println("myPage 사람 정보 수정: " + m);
-		
-		m.setUser_id(user.getUser_id());
-		
+	    MemberInfoVo memberInfo = (MemberInfoVo) authentication.getPrincipal();
+
+		String user_id = m.getUser_id();
+
+		memberInfo = loginMapperDao.getSelectMemberInfo(user_id);
+		memberInfo.setUser_id(user_id);
+
 		String str = aa.getOriginalFilename();
 		String o_str = m.getFname();
 		String path = request.getRealPath("/img/peopleImg");
@@ -207,6 +194,7 @@ public class MyPageController {
 				System.out.println(e.getMessage());
 			}
 			int re = -1;
+						
 			re = mypageservice.update_myinfo(m);
 			
 			if(re > 0 && str != null && !str.equals("") && o_str != null && !o_str.equals("")) {
@@ -222,10 +210,24 @@ public class MyPageController {
 		
 		
 		mypageservice.update_myinfo(m);
-		
+		session.invalidate();
 		//수정 끝나고 리스트 컨트롤러 호출
 		return "redirect:/mypage/mypage";
 	}
+	
+	//패스워드 체크
+	@NoLogging
+	@RequestMapping(value="/join/passCheck", method=RequestMethod.POST)
+	@ResponseBody
+	public boolean passCheck(MemberInfoVo vo, String user_id) throws Exception {
+		MemberInfoVo m = loginMapperDao.getSelectMemberInfo(user_id);
+		boolean pwdChk = passwordEncoder.matches(vo.getPwd(), m.getPwd());
+		return pwdChk;
+		
+	}
+	
+	
+	
 	
 	
 	//내가 작성한 글
@@ -233,11 +235,8 @@ public class MyPageController {
 	public ModelAndView board_list(HttpServletRequest request) {
 		HttpSession session = request.getSession();
 	    Authentication authentication = (Authentication) session.getAttribute("user");
-	    MemberInfoVo user = (MemberInfoVo) authentication.getPrincipal();
-	    System.out.println(user.getUser_id());
-		
+	    MemberInfoVo user = (MemberInfoVo) authentication.getPrincipal();	
 		MemberInfoVo m = loginMapperDao.getSelectMemberInfo(user.getUser_id());
-		System.out.println("myPage 내가 작성한 글: " + m);
 		
 		m.setUser_id(user.getUser_id());
 		
@@ -256,11 +255,8 @@ public class MyPageController {
 		HttpSession session = request.getSession();
 	    Authentication authentication = (Authentication) session.getAttribute("user");
 	    MemberInfoVo user = (MemberInfoVo) authentication.getPrincipal();
-	    System.out.println(user.getUser_id());
-		
 		MemberInfoVo m = loginMapperDao.getSelectMemberInfo(user.getUser_id());
-		System.out.println("myPage 내 결제 내역: " + m);
-		
+
 		m.setUser_id(user.getUser_id());
 		
 		ModelAndView mav = new ModelAndView();
@@ -277,10 +273,7 @@ public class MyPageController {
 		HttpSession session = request.getSession();
 	    Authentication authentication = (Authentication) session.getAttribute("user");
 	    MemberInfoVo user = (MemberInfoVo) authentication.getPrincipal();
-	    System.out.println(user.getUser_id());
-		
 		MemberInfoVo m = loginMapperDao.getSelectMemberInfo(user.getUser_id());
-		System.out.println("myPage 내가 쓴 함께가요 리스트: " + m);
 		
 		ModelAndView mav = new ModelAndView();
 //		MemberInfoVo m = new MemberInfoVo();
@@ -297,7 +290,6 @@ public class MyPageController {
 		HttpSession session = request.getSession();
 	    Authentication authentication = (Authentication) session.getAttribute("user");
 	    MemberInfoVo m = (MemberInfoVo) authentication.getPrincipal();
-	    System.out.println(m.getUser_id());
 		
 		m.setUser_id(m.getUser_id());
 		ModelAndView mav = new ModelAndView();
@@ -315,11 +307,8 @@ public class MyPageController {
 		HttpSession session = request.getSession();
 	    Authentication authentication = (Authentication) session.getAttribute("user");
 	    MemberInfoVo user = (MemberInfoVo) authentication.getPrincipal();
-	    System.out.println(user.getUser_id());
-		
 		MemberInfoVo m = loginMapperDao.getSelectMemberInfo(user.getUser_id());
-		System.out.println("myPage를 위한 membervo: " + m);
-		
+
 		m.setUser_id(m.getUser_id());
 		mypageservice.delete_myinfo(m);
 		return "redirect:/MainPage";
@@ -333,13 +322,9 @@ public class MyPageController {
 //		System.out.println("AAAAAAAAAAAAAAAAA");
 		HttpSession session = request.getSession();
 	    Authentication authentication = (Authentication) session.getAttribute("user");
-	    MemberInfoVo user = (MemberInfoVo) authentication.getPrincipal();
-	    System.out.println(user.getUser_id());
-		
+	    MemberInfoVo user = (MemberInfoVo) authentication.getPrincipal();	
 		MemberInfoVo m = loginMapperDao.getSelectMemberInfo(user.getUser_id());
-		System.out.println("myPage 비밀번호 변경: " + m);
-		
-		m.setUser_id(user.getUser_id());
+	
 		m.setPwd(o_pwd);
 		m.setUser_id(o_user_id);
 		mypageservice.update_pwd(m);
@@ -430,11 +415,8 @@ public class MyPageController {
 		HttpSession session = request.getSession();
 	    Authentication authentication = (Authentication) session.getAttribute("user");
 	    MemberInfoVo user = (MemberInfoVo) authentication.getPrincipal();
-	    System.out.println(user.getUser_id());
-		
 		MemberInfoVo m = loginMapperDao.getSelectMemberInfo(user.getUser_id());
-		System.out.println("myPage 사람사진 삭제: " + m);
-		
+
 		m.setUser_id(user.getUser_id());
 		
 		String o_str = m.getFname();

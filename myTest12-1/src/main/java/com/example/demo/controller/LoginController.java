@@ -153,32 +153,13 @@ public class LoginController {
    
    //회원가입
    @RequestMapping("/join/insert")
-   public String setInertMemberInfo(HttpServletRequest req, HttpServletResponse res) throws Exception{
+   public String setInertMemberInfo(HttpServletRequest req, HttpServletResponse res, MemberInfoVo member) throws Exception{
    
       //memberInfo.setPwd(pass);
       //DB에는 Date타입, vo에는 String 타입, 가져올 땐 다시 TO_CHAR
       
-        String user_id = req.getParameter("user_id");
-        String pwd = req.getParameter("pwd");
-     
-        String pass = passwordEncoder.encode(pwd);  
-        
-        String tel = req.getParameter("tel");
-        String birth = req.getParameter("birth");
-        String name = req.getParameter("name");
-        String address = req.getParameter("address");
-        String gender = req.getParameter("gender");
-        String fname = req.getParameter("fname");
-        String intro = req.getParameter("intro");
-        String info_create_date = req.getParameter("info_create_date");
-        String info_update_date = req.getParameter("info_update_date");
-        String nick_name = req.getParameter("nick_name");
-        String user_role = req.getParameter("user_role");
-        String email = req.getParameter("email");
-        String pwd2 = req.getParameter("pwd2");
-      
-      MemberInfoVo member = new MemberInfoVo(user_id, pass, tel, birth, name, address, gender,
-    		  fname, intro, info_create_date, info_update_date, nick_name, user_role, pwd, email);
+	  String encPassword = passwordEncoder.encode(member.getPwd());
+	  member.setPwd(encPassword);
       
       int re = securityService.setInsertMemberInfo(member);
       

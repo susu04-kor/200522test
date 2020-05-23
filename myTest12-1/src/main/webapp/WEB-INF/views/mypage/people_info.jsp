@@ -29,14 +29,42 @@ $(function(){
 				}});
 			});
 		});
+
+	
+	
 });
+
+$(document).ready(function(){
+		$("#submit").on("click", function(){
+			$.ajax({
+				url: "/join/passCheck",
+				type: "POST",
+				dataType: "json",
+				data: $("#updateForm").serializeArray(),
+				success: function(data) {
+					if(data==true){
+						if(confirm("회원 수정하시겠습니까?")){
+							$("#updateForm").submit();
+							}
+						}else{
+							alert("비밀번호가 틀렸습니다.");
+							return /*false - 내일 실험해보자 false - 이거 기반으로 회원가입도 가입버튼 수정해보자*/;
+							}
+					}	
+			})
+		})
+})
+
+
+
 </script>
 </head>
 <body>
 <h2>사람 정보 수정</h2>
 <hr>
 <section id="o_from">
-	<form action="/mypage/people_info_up" method="post" enctype="multipart/form-data">
+	<form id="updateForm" action="/mypage/people_info_up" method="post" enctype="multipart/form-data">
+	<input type="hidden" id="token" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 		아이디 <input type="text" value="${m.user_id }" readonly="readonly" name="user_id"><br>
 		닉네임 <input type="text" value="${m.nick_name }" name="nick_name"><br>
 		비밀번호를 입력하셔야 정보를 수정할수있습니다<br>
@@ -53,11 +81,12 @@ $(function(){
 		<input type="file" name="aa"><br>
 		소개 <input type="text" value="${m.intro }" name="intro"><br>
 		가입일 <input type="text" value="${m.info_create_date }" readonly="readonly"><br>
-	<button>수정</button>
 	</form>
+		<button id="submit" type="button">수정</button>
 </section>
 <section id="u_p_form">
-	<form id="update_pwd_form">
+	<form id="update_pwd_form" method="post">
+	<input type="hidden" id="token" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 		<input type="hidden" name="o_user_id" value="${m.user_id }"><br>
 		기존 비밀번호 <input type="text" name="o_pwd"><br>
 		변경할 비밀번호 <input type="text" name="pwd2"><br>

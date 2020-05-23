@@ -59,4 +59,7 @@ public interface MypageDao {
 	
 	//결제 정보
 	public List<PaymentVo> search_pay(MemberInfoVo m);
+	
+	//비밀번호 확인
+	public int passCheck(MemberInfoVo memberInfo);
 }

@@ -106,7 +106,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.usernameParameter("user_id")	//input name 파라미터로 user_id를 받아요
 			.passwordParameter("pwd") //input name 파라미터로 "pwd"를 받아요
 			.failureUrl("/login/login")	//로그인 실패시 이동하는 페이지
-			.failureHandler(new AuthFailureHandler())		//로그인 실패하면 수행하는 클래스
+//			.failureHandler(new AuthFailureHandler())		//로그인 실패하면 수행하는 클래스
 //			.successHandler(new AuthSuccessHandler());	//("/MainPage") //로그인 성공하면 수행하는 클래스
 			.successHandler(new LoginSuccessHandler());	//로그인 성공하면 수행하는 클래스
 //			.successHandler(new LoginSuccessHandlerAgain("/"));
