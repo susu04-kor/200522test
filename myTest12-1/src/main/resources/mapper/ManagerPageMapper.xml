@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <!-- 민아) 5/19, 관리자페이지  -->
+<mapper namespace="com.example.demo.dao.ManagerPageDao">
+		
+	<!-- 로그를 구글 차트로 나타내보기 위한 카운트 상위 10개만뽑는다면? -->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
+	<select id="chartLog" resultType="com.example.demo.vo.ChartVo">
+		select cnt as count, url
+			from (select count(*) cnt, url from aop_log group by url  having count(*) >1 order by cnt desc)
+				where rownum<![CDATA[  <=    ]]>10              
+	</select>
+		<!-- select count(*) count, url from aop_log group by url -->
+		
+	<!-- 로그 등록 -->
+	<insert id="insertLog">
+		insert into aop_log values(seq_log_num.nextval, #{url}, #{ip}, #{time}, #{user_id} )
+	</insert>
+
+	<!-- 로그 목록 -->
+	<select id="listLog" resultType="com.example.demo.vo.Aop_LogVo" parameterType="com.example.demo.util.Criteria">
+		select log_num, url, ip, time, user_id
+			from(select log_num, url, ip, time, user_id , row_number() over (order by log_num desc) as rNum
+				from aop_log
+			)
+				MP									
+			where rNum between #{rowStart} and #{rowEnd}
+			order by log_num desc
+	</select>
+	
+	<!-- 총 로그 수 -->
+	<select id="countLog" resultType="int">
+		select count (log_num) 
+			from aop_log
+				where log_num > 0
+	</select>
+
+	<!-- 회원 목록 -->
+	<select id="listMember" resultType="com.example.demo.vo.MemberInfoVo" parameterType="com.example.demo.util.Criteria">
+		select user_id, tel, name, nick_name, info_create_date, info_update_date
+			from (select user_id, tel, name, nick_name, info_create_date, info_update_date
+					,row_number() over(order by info_create_date desc) as rNum 
+						from member_info 
+							where 1 = 1
+							<include refid="search"></include>
+						)
+								MP
+									
+						where rNum between #{rowStart} and #{rowEnd}
+						order by info_create_date desc
+	</select>
+	
+	<!-- 총 회원 수  -->
+	<select id="countMember" resultType="int">
+		select count (user_id) 
+			from member_info  
+				where 1 = 1
+				<include refid="search"></include>
+	</select>
+	
+	<!-- 회원검색을 위한 동적쿼리  -->
+	<sql id="search">
+		<if test="searchType != null">
+			<if test="searchType == 't'.toString()">AND user_id LIKE '%' || #{keyword} || '%'</if>
+			<if test="searchType == 'c'.toString()">AND name LIKE '%' || #{keyword} || '%'</if>
+			<if test="searchType == 'w'.toString()">AND nick_name LIKE '%' || #{keyword} || '%'</if>
+		</if>
+	</sql>
+	
+	<!-- 회원 상세보기 -->
+	<select id="getMember" resultType="com.example.demo.vo.MemberInfoVo">
+  		select * from member_info where user_id = #{user_id}
+  	</select>
+  	
+  	<!-- 회원 삭제(강퇴) //  -->
+	<delete id="deleteMember">
+		delete member_info where user_id = #{user_id}
+	</delete>
+	
+</mapper>

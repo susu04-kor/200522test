@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.dao.AlarmDao">	
+<!-- 	함께가요 신청하기하면 알람 등록 -->
+	<insert id="insert_together_alarm">
+		<selectKey keyProperty="board_num" resultType="java.lang.Integer" order="BEFORE">
+			select max(application_no) from together_application
+		</selectKey>
+		insert into alarm values(seq_alarm_no.nextval,#{user_id},1,'신청자id로 수정해야됨','함께가요',#{board_num},#{t_num})
+	</insert>
+	
+<!-- 	함께가요 신청취소하면 취소 알람 등록 -->
+	<insert id="cancle_insert_together_alarm">
+	<selectKey keyProperty="board_num" resultType="java.lang.Integer" order="BEFORE">
+		select application_no from together_application where user_id = #{user_id} and t_num = #{t_num}
+	</selectKey>
+		insert into alarm values(seq_alarm_no.nextval,#{user_id},2,'신청자id로 수정해야됨','함께가요',#{board_num},#{t_num})
+	</insert>
+	
+	
+<!-- 	함께가요 신청 번호 조회 aaaaaaaaaaaaaaaaaaa -->
+	<select id="together_no" resultType="java.lang.Integer">
+		select application_no from together_application where user_id = #{user_id} and t_num = #{t_num}
+	</select>
+	
+<!-- 	함께가요 삭제 aaaaaaaaaaaaaaaaaaaaaaaa -->
+	<delete id="delete_application">
+		delete together_application where user_id = #{user_id} and t_num = #{t_num}
+	</delete>
+	
+	
+<!-- 	함께가요 신청 알림할거 있는지 조회 -->
+	<select id="search_insert_together_alarm" resultType="com.example.demo.vo.AlarmVo">
+		select * from alarm where chk=1 and user_id = #{user_id} and category = '함께가요'
+	</select>
+	
+<!-- 	함께가요 취소 알림할거 있는지 조회 -->
+	<select id="search_cancle_together_alarm" resultType="com.example.demo.vo.AlarmVo">
+		select * from alarm where chk=2 and user_id = #{user_id} and category = '함께가요'
+	</select>	
+	
+<!-- 	신청 알람할 수 -->
+	<select id="search_insert_together_count" resultType="java.lang.Integer">
+		select count(*) from alarm where user_id = #{user_id} and chk = 1 and category = '함께가요'
+	</select>
+	
+<!-- 	취소 알람할 수 -->
+	<select id="search_cancle_together_count" resultType="java.lang.Integer">
+		select count(*) from alarm where user_id = #{user_id} and chk = 2 and category = '함께가요'
+	</select>	
+	
+<!-- 	신청 알람 확인 -->
+	<update id="check_alarm_in">
+		delete alarm where user_id = #{user_id} and in_user_id = #{in_user_id} and chk = 1
+	</update>
+	
+<!-- 	취소 알람 확인 -->
+	<update id="check_alarm_cancle">
+		delete alarm where user_id = #{user_id} and in_user_id = #{in_user_id} and chk = 2
+	</update>	
+	
+<!-- 	함께가요 알람 삭제 -->
+	<delete id="delete_together_alarm">
+		delete alarm where category = '함께가요' and t_num = #{t_num}
+	</delete>
+	
+<!-- 	함께가요 작성자가 상세보기하면 알람 확인해서 알람 안가게 -->
+	<update id="chk_together_alarm">
+		update alarm set chk = 0 where t_num = #{t_num} and category = '함께가요' and user_id = #{user_id} and chk = 1
+	</update>
+	
+	
+	
+	
+	
+<!-- 	자유게시판 댓글 등록 알람 등록 -->
+	<insert id="insert_board_alarm">
+	<selectKey keyProperty="board_num" resultType="int" order="BEFORE">
+		select max(comm_num) from board_comment
+	</selectKey>
+		insert into alarm values(seq_alarm_no.nextval,#{user_id},1,'신청자id로 수정해야됨','자유게시판',#{board_num},#{t_num})
+	</insert>
+	
+<!-- 	자유게시판 댓글 삭제 알람 등록 -->
+	<insert id="cancle_insert_board_alarm">
+	<selectKey keyProperty="board_num" resultType="int" order="BEFORE">
+		select comm_num from board_comment where board_no=#{board_no} and user_id = #{user_id}
+	</selectKey>
+		insert into alarm values(seq_alarm_no.nextval,#{user_id},2,'신청자id로 수정해야됨','자유게시판',#{board_num},#{t_num})
+	</insert>
+
+<!-- 자유게시판 댓글 등록 알람 조회 -->
+	<select id="search_insert_board_alarm" resultType="com.example.demo.vo.AlarmVo">
+		select * from alarm where user_id = #{user_id} and category = '자유게시판' and chk = 1
+	</select>
+
+<!-- 자유게시판 댓글 삭제 알람 조회 -->
+	<select id="search_cancle_board_alarm" resultType="com.example.demo.vo.AlarmVo">
+		select * from alarm where user_id = #{user_id} and category = '자유게시판' and chk = 2
+	</select>
+	
+<!-- 자유게시판 댓글 등록 수 -->	
+	<select id="search_insert_board_alarm_count" resultType="java.lang.Integer">
+		select count(*) from alarm where user_id = #{user_id} and category = '자유게시판' and chk = 1
+	</select>
+	
+<!-- 자유게시판  댓글 취소 수-->
+	<select id="search_cancle_board_alarm_count" resultType="java.lang.Integer">
+		select count(*) from alarm where user_id = #{user_id} and category = '자유게시판' and chk = 2
+	</select>
+	
+<!-- 	자유게시판 알람 삭제 -->
+	<delete id="delete_board_alarm">
+		delete alarm where category = '자유게시판' and t_num = #{t_num}
+	</delete>
+	
+<!-- 	자유게시판 작성자가 상세보기로가면 댓글 등록된거 확인해서 알람 안가게 셋팅 -->
+	<update id="chk_board_alarm">
+		update alarm set chk = 0 where t_num = #{t_num} and category = '자유게시판' and user_id = #{user_id} and chk = 1
+	</update>
+	
+</mapper>

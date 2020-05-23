@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.dao.BoardDao">
+<!-- 민아 5/10 -->
+<!-- 	private int board_no; -->
+<!-- 	private String category; -->
+<!-- 	private String board_title; -->
+<!-- 	private String board_content; -->
+<!-- 	private Date board_date; -->
+<!-- 	private int board_hit; -->
+<!-- 	private String user_id; -->
+	<!-- 자유게시판 목록 -->
+	<select id="listBoard" resultType="com.example.demo.vo.BoardVo" parameterType="com.example.demo.util.Criteria">
+		select board_no ,category ,board_title,board_content ,board_date, board_hit, user_id
+			from (select board_no, category ,board_title, board_content, board_date, board_hit, user_id
+					,row_number() over(order by board_no desc) as rNum 
+						from board 
+							where 1 = 1
+							<include refid="search"></include>
+						)
+								MP
+									
+						where rNum between #{rowStart} and #{rowEnd}
+						order by board_no desc
+	</select>
+	
+	<!-- 자유게시판 게시물 총 개수  -->
+	<select id="countBoard" resultType="int">
+		select count (board_no) 
+			from board 
+				where 1 = 1
+				<include refid="search"></include>
+					and board_no > 0
+	</select>
+	
+	<!-- 검색을 위한 동적쿼리  -->
+	<sql id="search">
+		<if test="searchType != null">
+			<if test="searchType == 't'.toString()">AND board_title LIKE '%' || #{keyword} || '%'</if>
+			<if test="searchType == 'c'.toString()">AND board_content LIKE '%' || #{keyword} || '%'</if>
+			<if test="searchType == 'w'.toString()">AND user_id LIKE '%' || #{keyword} || '%'</if>
+			<if test="searchType == 'tc'.toString()">AND (board_title LIKE '%' || #{keyword} || '%') or (board_content LIKE '%' || #{keyword} || '%')</if>
+		</if>
+	</sql>
+	
+	
+	<!-- 자유게시판 등록 -->
+	<insert id="insertBoard">
+		insert into board(board_no, category, board_title, board_content, board_date, board_hit, user_id)
+  			values (seq_board_no.nextval, #{category} ,#{board_title}, #{board_content}, sysdate, 0, #{user_id}  )
+	</insert>
+	
+	<!-- 조회수증가 -->
+	<update id="updateHit">
+		update board set board_hit = board_hit +1 where board_no = #{board_no}
+	</update>
+	
+	<!-- 상세보기 -->
+	<select id="getBoard" resultType="com.example.demo.vo.BoardVo">
+  		select * from board where board_no = #{board_no}
+  	</select>
+  	
+  	<!-- 게시물 수정 // 로그인처리 추가되면 본인이 쓴 글만 수정할수 있도록 할 것-->
+	<update id="updateBoard">
+		update board set category = #{category}, board_title=#{board_title}, board_content=#{board_content}
+		  where board_no = #{board_no}
+	</update>
+	
+	<!-- 게시물 삭제 // 로그인처리 추가되면 본인이 쓴 글만 지울 수 있게 수정할것 -->
+	<delete id="deleteBoard">
+		delete board where board_no = #{board_no}
+	</delete>
+	
+	<!-- 마지막글번호 -->
+  <select id="lastBoard" resultType="java.lang.Integer">
+  	select max(board_no) from board
+  </select>
+
+</mapper>

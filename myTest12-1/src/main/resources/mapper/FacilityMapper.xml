@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.dao.FacilityDao">
+ 	<select id="listFacility" resultType="com.example.demo.vo.FacilityVo" parameterType="com.example.demo.util.SearchCriteria">
+ 		select facility_no,
+ 		f_pic,
+ 		facility_name,
+ 		f_intro,
+ 		facility_addr,
+ 		f_minprice,
+ 		f_phone,
+ 		f_feature
+ 		from
+ 		(
+ 		select facility_no,
+ 		f_pic,
+ 		facility_name,
+ 		f_intro,
+ 		facility_addr,
+ 		f_minprice,
+ 		f_phone,
+ 		f_feature,
+ 		row_number() over(order by f_minprice) as rNum
+ 		from facility
+ 		where 1=1
+ 		<include refid="search"></include> 		 
+ 		)MP
+		where rNum between #{rowStart} and #{rowEnd}
+		order by f_minprice
+ 	</select>
+ 	
+ 	<select id="listCount" parameterType="com.example.demo.util.SearchCriteria" resultType="int">
+		SELECT COUNT(facility_no)
+		 FROM facility
+		 WHERE 1=1 
+		 <include refid="search"></include>
+		 and facility_no > 0
+	</select>
+	
+	<select id="getFacility" parameterType="int" resultType="com.example.demo.vo.FacilityVo">
+		select * from facility where facility_no = #{facility_no}
+	</select>
+		
+	<select id="listRoom" parameterType="int" resultType="com.example.demo.vo.RoomVo">
+		select * from room where facility_no = #{facility_no}
+	</select>
+	
+	<insert id="postReview" parameterType="hashmap">
+		insert into review
+		(
+		r_no,
+		review_content,
+		r_grade,
+		r_insert_date,
+		r_update_date,
+		r_open_status,
+		facility_no,
+		user_id
+		)
+		values
+		(
+		seq_r_no.nextval,
+		#{review_content},
+		#{r_grade},
+		sysdate,
+		sysdate,
+		0,
+		#{facility_no},
+		#{user_id}
+		)
+		
+	</insert>
+	
+
+	
+	<sql id="search">
+	    <if test="keyword != null">
+	
+	        AND (facility_name LIKE '%' || #{keyword} || '%') or (facility_addr LIKE '%' || #{keyword} || '%') or (f_feature LIKE '%' || #{keyword} || '%') or (f_intro LIKE '%' || #{keyword} || '%')
+	
+	    </if>
+
+		
+	</sql>
+	
+
+	
+</mapper>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.dao.Pic_Board_CommentDao">
+   <!-- 댓글목록 -->
+   <select id="plistComment" resultType="com.example.demo.vo.Pic_Board_CommentVo">
+      select * from Pic_board_comment where photo_no = #{photo_no} order by photo_comm_no desc
+   </select>
+
+   <!-- 선택댓글 -->
+   <select id="pselectComment" resultType="com.example.demo.vo.Pic_Board_CommentVo">
+      select * from Pic_board_comment where photo_comm_no = #{photo_comm_no}
+   </select>
+   
+   <!-- 댓글등록 -->
+   <insert id="pinsertComment">
+      insert into pic_board_comment(photo_comm_no, photo_comm_date, photo_comm_cont, user_id, photo_no)
+         values(seq_photo_comm_no.nextval, sysdate, #{photo_comm_cont,jdbcType=VARCHAR}, #{user_id},#{photo_no})
+   </insert>
+   
+   <!-- 댓글삭제 -->
+   <delete id="pdeleteComment">
+      delete pic_board_comment where photo_comm_no = #{photo_comm_no}
+   </delete>
+   
+   <delete id="pdeleteCommBoard">
+      delete pic_board_comment where photo_no = #{photo_no}
+   </delete>
+   
+   <!-- 댓글수정  -->   
+   <update id="pupdateComment">
+      update pic_board_comment set photo_comm_cont = #{photo_comm_cont}
+         where photo_comm_no = #{photo_comm_no}
+   </update>
+   
+<!--    private int photo_comm_no;      //댓글번호 -->
+<!--    private Date photo_comm_date;      //댓글등록일시 -->
+<!--    private String photo_comm_cont;   //댓글내용 -->
+<!--    private int photo_no;      //게시물번호 -->
+<!--    private String user_id;      //아이디    -->
+</mapper>

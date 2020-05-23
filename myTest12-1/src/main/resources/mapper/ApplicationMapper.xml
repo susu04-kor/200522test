@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.dao.ApplicationDao">	
+	<!-- 신청하기 insert -->
+	<insert id="insertApplication">
+		insert into together_application values(seq_application_no.nextval,#{user_id},#{t_num})
+	</insert>
+	
+	<!-- 신청하기 delete, 좋아요 눌렀다가 한번 더 누르면 숫자 1빠져야함  -->
+	<delete id="deleteApplication">
+		delete together_application where t_num = #{t_num} and user_id = #{user_id}
+	</delete>
+	
+	
+	<!-- 신청하기 누른 수 조회!  -->
+	<select id="checkApplication" resultType="java.lang.Integer">
+		select count(*) from together_application where t_num = #{t_num} and user_id = #{user_id}
+	</select>
+	
+	<!-- 신청자 id 조회 -->
+	<select id="userApplication" parameterType="int" resultType="com.example.demo.vo.ApplicationVo">
+<!-- 			select t.user_id from together t , together_application ta where t.t_num = ta.t_num -->
+		select user_id from together_application where t_num=#{t_num}
+	</select>
+</mapper>

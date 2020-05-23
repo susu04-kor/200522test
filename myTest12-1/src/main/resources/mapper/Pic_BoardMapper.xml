@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.dao.Pic_BoardDao">
+
+   <!-- 모든 파일 -->
+   <select id="listFile"
+      resultType="com.example.demo.vo.Pic_Board_FileVo"
+      parameterType="com.example.demo.util.Criteria">
+      SELECT photo_file_no,photo_file_name,photo_no
+      FROM ( select photo_file_no,photo_file_name,photo_no,ROW_NUMBER()
+      OVER(ORDER BY photo_file_no DESC) AS RNUM
+      FROM pic_BOARD_file ) MP
+      WHERE RNUM BETWEEN #{rowStart} AND #{rowEnd}
+      order by photo_file_no desc
+   </select>
+
+   <!-- 모든 글 -->
+   <select id="listPic_Board"
+      resultType="com.example.demo.vo.Pic_BoardVo"
+      parameterType="com.example.demo.util.Criteria">
+      SELECT photo_no,photo_date,photo_detail,user_id
+      FROM ( select photo_no,photo_date,photo_detail,user_id, ROW_NUMBER()
+      OVER(ORDER BY photo_no DESC) AS RNUM
+      FROM pic_BOARD ) MP
+      WHERE RNUM BETWEEN #{rowStart} AND #{rowEnd}
+      order by photo_no desc
+   </select>
+
+   <!-- sns 총 게시물 수 -->
+   <select id="listCount" resultType="int"
+      parameterType="com.example.demo.util.Criteria">
+      SELECT COUNT(*)
+      FROM pic_board
+      WHERE 1=1
+      and photo_no> 0
+   </select>
+
+   <!-- 상세보기 파일 -->
+   <select id="detailFile"
+      resultType="com.example.demo.vo.Pic_Board_FileVo" parameterType="map">
+      select * from pic_board_file where photo_no = #{photo_no}
+   </select>
+
+   <!-- 상세보기 글 -->
+   <select id="detailPic_Board"
+      resultType="com.example.demo.vo.Pic_BoardVo" parameterType="map">
+      select * from pic_board where photo_no = #{photo_no}
+   </select>
+
+   <!-- sns 글 등록 -->
+   <insert id="insertPic_Board">
+
+      <selectKey keyProperty="photo_no"
+         resultType="java.lang.Integer" order="AFTER">
+         select seq_photo_no.nextval from dual
+      </selectKey>
+      insert into pic_board values 
+         (seq_photo_no.nextval, sysdate, #{photo_detail,jdbcType=VARCHAR}, #{user_id, jdbcType=VARCHAR},0)
+   </insert>
+
+
+   <!-- sns 파일등록 -->
+   <insert id="insertfile">
+      <!-- <selectKey keyProperty="photo_no" resultType="java.lang.Integer" order="BEFORE"> -->
+      <!-- select seq_photo_no.nextval from dual -->
+      <!-- </selectKey> -->
+      insert into pic_board_file values (seq_pic_board_no.nextval,#{photo_file_name}, #{photo_no})
+   </insert>
+
+   <!-- 마지막글번호 -->
+   <select id="photo_no" resultType="java.lang.Integer">
+      select max(photo_no) from pic_board
+   </select>
+
+   <!-- sns 글 삭제 -->
+   <delete id="deletePic_Board">
+      delete pic_board where photo_no = #{photo_no} <!--and user_id = #{user_id}--> 
+   </delete>
+   
+   <delete id="deleteFile">
+         delete pic_board_file where photo_no = #{photo_no}<!--and user_id = #{user_id}--> 
+   </delete>
+
+   <!-- sns수정 ??? -->
+   <update id="updatePic_Board">
+      update pic_board set photo_detail = #{photo_detail},pic_board_file = #{pic_board_file} where photo_no = #{photo_no}
+   </update>
+
+
+   <!-- 좋아요 수 민아)5/17,좋아요기능 추가중-->
+   <update id="upcntLike">
+      update pic_board set cntLike = (select count(*) from likeit where photo_no=#{photo_no})
+         where photo_no = #{photo_no}
+   </update>
+
+</mapper>

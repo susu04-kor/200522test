@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+  	<!-- namespace는 dao interface의 경로 -->
+<mapper namespace="com.example.demo.dao.LoginMapperDao">
+	<!-- id는 dao의 클래스 이름과 일치시켜야함 -->
+	<!-- resultType은 vo의 경로 -->
+  
+  <select id="selectAll" parameterType="String" resultType="com.example.demo.vo.MemberInfoVo">
+  	select * from member_info;
+  </select>
+  
+  
+  <select id="getSelectMemberInfo" parameterType="String" resultType="com.example.demo.vo.MemberInfoVo">
+    <!-- 회원정보 조회 -->
+    select *
+    from member_info
+    		where user_id=#{user_id}
+  </select>
+  <insert id="setInsertLoginLog" parameterType="com.example.demo.vo.LoginLogVo">
+  	<!-- 로그인로그 -->
+  	<!-- 테이블 없는데 어떻게...? -->
+  	
+  	insert into member_log(
+  		SEQ,
+  		user_id,
+  		login_ip,
+  		login_date,
+  		status)
+  	values(
+  		SEQ_SECURITY.nextval,
+  		#{user_id,jdbcType=VARCHAR},
+  		#{loginIp,jdbcType=VARCHAR},
+  		TO_CHAR(sysdate,'YYYYMMDDHH24MISS'),
+  		#{status,jdbcType=VARCHAR}
+  		)
+  </insert>
+</mapper>

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <!-- //영수) 5월12일 QnA맵퍼 -->
+<mapper namespace="com.example.demo.dao.QnADao">
+ 	
+ 	<!-- 모든 qna리스트 -->
+ 	<select id="allQnAList" resultType="com.example.demo.vo.QnAVo" parameterType="com.example.demo.util.Criteria">
+ 		<!-- 글번호, 부모글번호, 들여쓰기, 답변의 답변일 경우 순으로 정렬 -->
+ 		SELECT  *
+		 FROM ( 
+		        select inq_no, cs_no, inq_title, inq_content, inq_date, user_id, inq_file, ref, ref_step, ref_level, ROW_NUMBER() OVER(ORDER BY inq_no DESC) AS RNUM
+		         FROM qna
+		         WHERE 1=1 
+		         <include refid="search"></include>          
+		                       ) q
+		WHERE RNUM BETWEEN #{rowStart} AND #{rowEnd}
+		order by ref desc, ref_level, ref_step
+ 	</select>
+
+		<!-- qna등록 시퀀스 이용 -->
+<!-- 	<insert id="insertQnA"> -->
+<!-- 		insert into qna values (seq_inq_no.nextval, #{cs_no}, #{inq_title}, #{inq_content}, sysdate, #{user_id}, #{inq_file}, #{ref}, 0, 0) -->
+<!-- 	</insert> -->
+
+	<!-- qna등록 nvl 이용 -->
+	<insert id="insertQnA">
+		insert into qna values ((select nvl(max(inq_no), 0) + 1 from qna), #{cs_no}, #{inq_title}, #{inq_content}, sysdate, #{user_id}, #{inq_file}, #{ref}, 0, 0)
+	</insert>
+	
+	<!-- qna상세보기 -->
+	<select id="detailQnA" resultType="com.example.demo.vo.QnAVo">
+		select * from qna where inq_no = #{inq_no}
+	</select>
+	
+	<!-- qna삭제 -->
+	<delete id="deleteQnA">
+		delete qna where inq_no = #{inq_no}
+	</delete>
+	
+	<!-- qna수정 -->
+	<update id="updateQnA">
+		update qna set inq_title=#{up_inq_title}, inq_content=#{up_inq_content}, inq_file=#{up_inq_file} where inq_no=#{up_inq_no} and user_id = #{up_user_id} 
+	</update>
+	
+	<!-- 답변등록 -->
+	<insert id="insertRe">
+		<!-- 답변은 사진은 태그로 올라가고 파일 저장은 안함 -->
+<!-- 		insert into qna values ((select nvl(max(inq_no), 0) + 1 from qna), #{cs_no}, '답변 입니다', #{inq_content}, sysdate, #{user_id}, '', #{ref}, #{ref_step}, #{ref_level}) -->
+		insert into qna values ((select nvl(max(inq_no), 0) + 1 from qna), #{cs_no}, #{inq_title}, #{inq_content}, sysdate, #{user_id}, '', #{ref}, #{ref_step}, #{ref_level})
+	</insert>
+	
+	<!-- 마지막 글번호 -->
+	<select id="lastNo" resultType="java.lang.Integer">
+		select max(inq_no) from qna
+	</select>
+	
+	<!-- qna게시물 수 -->
+	<select id="listCount" resultType="int" parameterType="com.example.demo.util.SearchCriteria">
+		SELECT COUNT(inq_no)
+		  FROM qna
+		   WHERE 1=1
+		<include refid="search"></include>
+		 and inq_no > 0
+	</select>
+	
+	<sql id="search">
+		<if test="searchType != null">
+			<if test="searchType == 't'.toString()">AND inq_title LIKE '%' || #{keyword} || '%'</if>
+			<if test="searchType == 'c'.toString()">AND inq_content LIKE '%' || #{keyword} || '%'</if>
+			<if test="searchType == 'w'.toString()">AND user_id LIKE '%' || #{keyword} || '%'</if>
+			<if test="searchType == 'tc'.toString()">AND (inq_title LIKE '%' || #{keyword} || '%') or (inq_content LIKE '%' || #{keyword} || '%')</if>
+		</if>
+	</sql>
+	
+	<!-- 답변있는 글은 삭제 못하게 -->
+	<select id="no_delete" resultType="java.lang.Integer">
+		select count(*) from qna where ref = #{ref} and ref_step>0
+	</select>
+	
+	<!-- 	파일이름 -->
+	<select id="fime_name" resultType="com.example.demo.vo.QnAVo">
+		select * from qna
+	</select>
+</mapper>

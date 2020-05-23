@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.dao.ReplyDao">
+
+	<!-- 댓글 작성 -->
+	<insert id="writeReply">
+		insert into together_comment(t_num,t_r_num,t_r_content,user_id,secret_reply)
+		values(#{t_num},seq_together_comment.nextval,#{t_r_content},#{user_id},#{secret_reply})
+	</insert>
+	
+	<!-- 비밀댓글 쿼리 바꾸기 -->
+	<!-- 댓글 조회  -->
+	<select id="togetherReply" resultType="com.example.demo.vo.ReplyVo">
+		select t_r_num, t_r_content,user_id,regdate,secret_reply from together_comment where t_num=#{t_num}
+	</select>
+	
+	<!-- 댓글 수정 -->
+	<update id="updateReply" parameterType="com.example.demo.vo.ReplyVo">
+		update together_comment set t_r_content = #{t_r_content} where t_r_num=#{t_r_num}
+	</update>
+	
+	<!-- 댓글 삭제 -->
+	<delete id="deleteReply" parameterType="com.example.demo.vo.ReplyVo">
+		delete from together_comment where t_r_num = #{t_r_num}
+	</delete>
+	
+	<!-- 글삭제시 댓글 삭제 -->
+	<delete id="deleteAll" parameterType="com.example.demo.vo.ReplyVo">
+		delete from together_comment where t_num = #{t_num}
+	</delete>
+	
+	<!-- 선택된 댓글 조회 -->
+ 	<select id="selectReply" resultType="com.example.demo.vo.ReplyVo">
+		SELECT
+				t_num
+			  , t_r_num
+			  , t_r_content
+			  , user_id
+			  , regdate
+		  FROM together_comment
+		 WHERE t_r_num = #{t_r_num}
+	</select>
+	
+</mapper>

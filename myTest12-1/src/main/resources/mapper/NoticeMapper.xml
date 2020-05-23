@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <!-- //영수) 5월12일 Notice맵퍼 -->
+<mapper namespace="com.example.demo.dao.NoticeDao">
+<!--  	공지사항 리스트 -->
+ 	<select id="allNoticeList" resultType="com.example.demo.vo.NoticeVo" parameterType="com.example.demo.util.SearchCriteria">
+ 		SELECT  notice_no, notice_title,notice_content,notice_hit,notice_date,cs_no
+		 FROM ( 
+		        SELECT notice_no,notice_title,notice_content,notice_hit,notice_Date,cs_no,
+		               ROW_NUMBER() OVER(order by notice_no desc) AS RNUM
+		         FROM notice
+		         where 1=1
+		         <include refid="search"></include>
+		                       )
+		WHERE RNUM BETWEEN #{rowStart} AND #{rowEnd}
+		order by notice_no desc
+ 	</select>
+ 	
+<!--  	공지사항 등록 -->
+ 	<insert id="insertNotice">
+ 		insert into notice values (seq_notice_no.nextval, #{notice_title},#{notice_content},0,sysdate,#{cs_no})
+ 	</insert>
+ 	
+<!-- 	공지사항 삭제 -->
+	<delete id="deleteNotice">
+		delete notice where notice_no = #{notice_no}
+	</delete>
+	
+<!-- 	공지사항 수정 -->
+	<update id="updateNotice">
+		update notice set notice_title = #{u_notice_title}, notice_content = #{u_notice_content}, cs_no = #{u_cs_no} where notice_no = #{u_notice_no}
+	</update>
+	
+<!-- 	조회수 -->
+	<update id="hit">
+		update notice set notice_hit = (select notice_hit from notice where notice_no=#{notice_no})+1 where notice_no=#{notice_no}
+	</update>
+
+<!-- 상세보기 -->
+	<select id="detailNotice" resultType="com.example.demo.vo.NoticeVo">
+		select * from notice where notice_no = #{notice_no}
+	</select>
+	
+	<!-- 전체 게시물수 -->
+<select id="countNotice" resultType="java.lang.Integer" parameterType="com.example.demo.util.SearchCriteria">
+	select count(*) from notice
+	where 1=1
+	<include refid="search"></include>	
+		   AND notice_no > 0
+</select>
+
+<sql id="search">
+		<if test="searchType != null">
+			<if test="searchType == 't'.toString()">AND notice_title LIKE '%' || #{keyword} || '%'</if>
+			<if test="searchType == 'c'.toString()">AND notice_content LIKE '%' || #{keyword} || '%'</if>
+			<if test="searchType == 'w'.toString()">AND user_id LIKE '%' || #{keyword} || '%'</if>
+			<if test="searchType == 'tc'.toString()">AND (notice_title LIKE '%' || #{keyword} || '%') or (notice_content LIKE '%' || #{keyword} || '%')</if>
+		</if>
+</sql>
+</mapper>

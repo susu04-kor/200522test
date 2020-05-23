@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.dao.TogetherDao">
+ 	
+ 	<select id="listTogether" resultType="com.example.demo.vo.TogetherVo" parameterType="com.example.demo.util.SearchCriteria">
+ 		select t_num,
+ 		t_title,
+ 		t_intro,
+ 		user_id,
+ 		t_size,
+ 		t_attendee_cnt,
+ 		t_date,
+ 		t_place,
+ 		t_hit,
+ 		thumbnail
+ 		from
+ 		(
+ 		select t_num,
+ 		t_title,
+ 		t_intro,
+ 		user_id,
+ 		t_size,
+ 		t_attendee_cnt,
+ 		t_date,
+ 		t_place,
+ 		t_hit,
+ 		thumbnail,
+ 		row_number() over(order by t_num desc) as rNum
+ 		from together
+ 		where 1=1
+ 		<include refid="search"></include>
+ 		)MP
+		where rNum between #{rowStart} and #{rowEnd}
+		order by t_num desc
+ 	</select>
+	
+	
+<!-- 		투게더 조인 썸네일 리스트 -->
+<!-- 		<select id="listTogether" resultType="com.example.demo.vo.TogetherVo" parameterType="com.example.demo.util.SearchCriteria"> -->
+<!-- 		select t.t_num, -->
+<!-- 		 		t_title, -->
+<!-- 		 		t_intro, -->
+<!-- 		 		user_id, -->
+<!-- 		 		t_size, -->
+<!-- 		 		t_attendee_cnt, -->
+<!-- 		 		t_date, -->
+<!-- 		 		t_place, -->
+<!-- 		 		t_hit, -->
+				
+<!-- 				file_name, -->
+<!-- 				t_no		 -->
+		
+<!-- 		 		from -->
+<!-- 		 		( -->
+<!-- 		 		select t.t_num, -->
+<!-- 		 		t_title, -->
+<!-- 		 		t_intro, -->
+<!-- 		 		user_id, -->
+<!-- 		 		t_size, -->
+<!-- 		 		t_attendee_cnt, -->
+<!-- 		 		t_date, -->
+<!-- 		 		t_place, -->
+<!-- 		 		t_hit, -->
+		
+<!-- 				file_name, -->
+<!-- 				t_no, -->
+		
+<!-- 		 		row_number() over(order by t.t_num desc) as rNum -->
+<!-- 		 		from together t, thumbnail tn -->
+<!-- 		 		where 1=1 -->
+<!-- 		 		)MP -->
+<!-- 				where rNum between #{rowStart} and #{rowEnd} -->
+<!-- 				order by t_num desc -->
+<!-- 		</select> -->
+ 	
+<!--  	<select id="listTogether" resultType="com.example.demo.vo.TogetherVo" parameterType="com.example.demo.vo.Criteria"> -->
+<!--  		select t_num, -->
+<!--  		t_thumbnail, -->
+<!--  		t_title, -->
+<!--  		t_intro, -->
+<!--  		user_id, -->
+<!--  		t_size, -->
+<!--  		t_attendee_cnt, -->
+<!--  		t_date, -->
+<!--  		t_place, -->
+<!--  		t_hit -->
+<!--  		from -->
+<!--  		( -->
+<!--  		select t_num, -->
+<!--  		t_thumbnail, -->
+<!--  		t_title, -->
+<!--  		t_intro, -->
+<!--  		user_id, -->
+<!--  		t_size, -->
+<!--  		t_attendee_cnt, -->
+<!--  		t_date,t_place, -->
+<!--  		t_hit, -->
+<!--  		row_number() over(order by t_num desc) as rNum -->
+<!--  		from together )MP -->
+<!-- 		where rNum between #{rowStart} and #{rowEnd} -->
+<!-- 		order by t_num desc -->
+<!--  	</select> -->
+ 	
+ 	<select id="listCount" parameterType="com.example.demo.util.SearchCriteria" resultType="int">
+		SELECT COUNT(t_num)
+		 FROM together
+		 WHERE 1=1 
+		 <include refid="search"></include>
+		 and t_num > 0
+	</select>
+	<sql id="search">
+		<if test="searchType != null">
+			<if test="searchType == 't'.toString()">AND t_title LIKE '%' || #{keyword} || '%'</if>
+			<if test="searchType == 'd'.toString()">AND t_detail LIKE '%' || #{keyword} || '%'</if>
+			<if test="searchType == 'w'.toString()">AND user_id LIKE '%' || #{keyword} || '%'</if>
+			<if test="searchType == 'p'.toString()">AND t_date LIKE '%' || #{keyword} || '%'</if>
+			<if test="searchType == 'td'.toString()">AND (t_title LIKE '%' || #{keyword} || '%') or (t_detail LIKE '%' || #{keyword} || '%')</if>
+		</if>
+	</sql>
+	
+
+	<insert id="writeTogether">
+		insert into together(t_num,t_title,t_intro,t_detail,t_open_date,t_place,t_date,t_size,t_attendee_cnt,t_fname,user_id,t_hit,thumbnail)
+		values (seq_together.nextval,#{t_title},#{t_intro},#{t_detail},sysdate,#{t_place},#{t_date},#{t_size},0,#{t_fname},'user1',0,#{thumbnail})
+	</insert>
+
+	
+	<!-- 함께가요 글 작성 -->
+	<!-- useGeneratedKeys는 자동적으로 증가되는 키를 받는 getGeneratedKeys()를 사용할 수 있게 true로 설정  -->
+	<!-- keyProperty는 selectKey에의해 선택된 키(keyProperty="t_num")가 무엇인지 설정 -->
+	<!-- order="BEFORE"는 insert를 실행하기전에 실행한다는 설정 -->
+<!-- 	<insert id="writeTogether" parameterType="com.example.demo.vo.TogetherVo" useGeneratedKeys="true" keyProperty="t_num"> -->
+<!-- 		<selectKey keyProperty="t_num" resultType="int" order="BEFORE"> -->
+<!-- 			select seq_together.nextval from dual -->
+<!-- 		</selectKey> -->
+<!-- 		insert into together(t_num,t_title,t_intro,t_detail,t_open_date,t_place,t_date,t_size,t_attendee_cnt,t_fname,user_id,t_hit) -->
+<!-- 		values (seq_together.nextval,#{t_title},#{t_intro},#{t_detail},sysdate,#{t_place},#{t_date},#{t_size},0,'fname.jpg','wonwoo',0) -->
+<!-- 	</insert> -->
+	
+	
+	<!-- 썸네일 파일 첨부 -->
+	<insert id="insertThumbnail" >
+		insert into thumbnail values (seq_thumbnail.nextval, #{file_name}, #{t_num})
+	</insert>
+	
+	
+	<!-- 조회수  -->
+	<update id="togetherHit" parameterType="int">
+		update together set t_hit = t_hit + 1 where t_num = #{t_num}
+	</update>
+	
+
+	
+	<select id="detailTogether" parameterType="int" resultType="com.example.demo.vo.TogetherVo">
+		select * from together where t_num = #{t_num}
+	</select>
+	
+	<update id="updateTogether" parameterType="com.example.demo.vo.TogetherVo">
+		update together set thumbnail=#{thumbnail},t_title=#{t_title},t_intro=#{t_intro},t_detail=#{t_detail},t_place=#{t_place},t_size=#{t_size},t_fname=#{t_fname} where t_num=#{t_num}
+	</update>
+	
+	<delete id="deleteTogether" parameterType="int">
+		delete from together where t_num =#{t_num}
+	</delete>
+	
+<!-- 	마지막 글번호 -->
+	<select id="last_no" resultType="java.lang.Integer">
+		select max(t_num) from together
+	</select>
+	
+<!-- 	썸네일 목록 -->
+		<select id="listThumbnail" resultType="com.example.demo.vo.ThumbnailVo" parameterType="com.example.demo.util.SearchCriteria">
+ 		select t_num,
+ 				t_no,
+				file_name
+ 		from
+ 				(select 
+ 					t_num,
+ 					t_no,
+					file_name,
+ 					row_number() over(order by t_num desc) as rNum
+ 				from thumbnail
+ 				where 1=1
+ 				<include refid="search"></include>
+ 				)MP
+		where rNum between #{rowStart} and #{rowEnd}
+		order by t_num desc
+ 	</select>
+ 	
+<!--  	함께가요 신청인원 -->
+ 	<update id="upcntApplication">
+		update together set t_attendee_cnt = (select count(*) from together_application where t_num=#{t_num})
+			where t_num = #{t_num}
+	</update>
+</mapper>

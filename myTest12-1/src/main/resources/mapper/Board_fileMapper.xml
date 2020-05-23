@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.dao.Board_fileDao">
+<!-- 민아 5/10 -->
+<!-- 	private String uuid;		// uuid로 저장되는 파일이름 -->
+<!-- 	private String file_path;	// 파일 경로 -->
+<!-- 	private String file_name;	// 파일의 오리지널 이름  -->
+<!-- 	private int board_no;		// 게시물 번호(글번호) -->
+	
+	<!-- 자유게시판 파일 등록 -->
+	<insert id="insert">
+		insert into board_file(uuid, file_path, file_name, board_no)
+			values(#{uuid}, #{file_path}, #{file_name}, #{board_no})
+	</insert>
+	
+	<!-- 같은 게시물번호에 등록된 파일들찾기 -->
+	<select id="selectFile" resultType="com.example.demo.vo.Board_fileVo">
+		select * from board_file where board_no = #{board_no}
+	</select>
+	
+	<!-- 게시물 수정시에 파일이 바뀌면 그 파일의uuid, filename도 변경되도록  -->
+	<update id="updateFile">
+		update board_file set uuid = #{uuid}, file_name = #{file_name}  where board_no = #{board_no}
+	</update>
+	
+	
+	<!-- 파일지우기, 파일만 지울때는 uuid기준, 게시글이 지워질때도 파일은 지워짐 -->
+	<delete id="delete">
+		delete board_file where uuid = #{uuid}
+	</delete>
+	<delete id="delbord_no">
+		delete board_file where board_no = #{board_no}
+	</delete>
+	
+	<!-- 썸머노트 폴더(저장경로)엔 있지만, 실제로 db에 안들어간 파일을 찾기위해서 (등록을 안한파일) -->
+	<!-- 썸머노트에서 글쓸때 이미지 불러왔다가 다른거 넣고싶어서 지워도 폴더(c드라이브 썸머노트)에는 남아있음  -->
+	<select id="realFile" resultType="com.example.demo.vo.Board_fileVo">
+		select * from board_file
+	</select>
+	
+</mapper>

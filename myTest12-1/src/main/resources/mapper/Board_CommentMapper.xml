@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.dao.Board_CommentDao">
+	<!-- 민아 5/10 -->
+	<!-- 댓글목록 -->
+	<select id="listComment" resultType="com.example.demo.vo.Board_CommentVo">
+		select * from board_comment where board_no = #{board_no} order by comm_num desc
+	</select>
+
+	<!-- 선택한 댓글보기(수정,삭제를 위해) -->
+	<select id="selectComment" resultType="com.example.demo.vo.Board_CommentVo">
+		select * from board_comment where comm_num = #{comm_num}
+	</select>
+	
+	<!-- 댓글등록 -->
+	<insert id="insertComment">
+		insert into board_comment(comm_num, comm_date, comm_cont, board_no, user_id)
+			values(seq_boardcomm.nextval, sysdate, #{comm_cont}, #{board_no}, #{user_id})
+	</insert>
+	
+	<!-- 댓글삭제 -->
+	<delete id="deleteComment">
+		delete board_comment where comm_num = #{comm_num}
+	</delete>
+	
+	<delete id="deleteCommBoard">
+		delete board_comment where board_no = #{board_no}
+	</delete>
+	
+	<!-- 댓글수정  -->	
+	<update id="updateComment">
+		update board_comment set comm_cont = #{comm_cont}
+			where comm_num = #{comm_num}
+	</update>
+	
+<!-- 	private int comm_num;		//댓글번호 -->
+<!-- 	private Date comm_date;		//댓글등록일시 -->
+<!-- 	private String comm_cont;	//댓글내용 -->
+<!-- 	private int board_no;		//게시물번호 -->
+<!-- 	private String user_id;		//아이디	 -->
+</mapper>

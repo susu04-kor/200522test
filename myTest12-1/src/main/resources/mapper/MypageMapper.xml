@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <!-- //영수) 5월16일 Mypage맵퍼 -->
+<mapper namespace="com.example.demo.dao.MypageDao">
+<!--  	내 정보 -->
+ 	<select id="select_myinfo" resultType="com.example.demo.vo.MemberInfoVo">
+ 		select * from member_info where user_id = #{user_id}
+ 	</select>
+ 	
+<!--  	내 정보 수정 -->
+ 	<update id="update_myinfo">
+ 		update member_info set tel=#{tel}, name=#{name},
+ 		address=#{address}, gender=#{gender}, intro=#{intro}, info_update_date = sysdate,
+ 		nick_name=#{nick_name}, fname=#{fname}
+ 		 where user_id = #{user_id} and pwd = #{pwd}
+ 	</update>
+ 	
+<!--  	반려동물 등록 -->
+ 	<insert id="insert_pet">
+ 		insert into animal_info values(seq_pet_no.nextval,#{user_id},#{pet_date},#{pet_type},#{pet_pic},#{pet_name})
+ 	</insert>
+ 	
+<!--  	insert into animal_info values(seq_pet_no.nextval,'user1',round((select sysdate - to_date('2020-05-10','yyyy-mm-dd') from dual),0),'','강아지') -->
+<!-- 	alter table animal_info modify(pet_date number) -->
+ 	
+<!--  	회원탈퇴 -->
+ 	<delete id="delete_myinfo">
+ 		delete member_info where user_id = #{user_id}
+ 	</delete>
+ 	
+<!--  	내가 쓴 자유게시판 글 -->
+	<select id="search_my_board" resultType="com.example.demo.vo.BoardVo">
+		select * from board where user_id = #{user_id}
+	</select>
+	
+<!-- 	내가 쓴 sns -->
+	<select id="search_my_sns" resultType="com.example.demo.vo.Pic_BoardVo">
+		select * from pic_board where user_id = #{user_id}
+	</select>
+	
+<!-- 	내가 쓴 함께가요 글 -->
+	<select id="search_my_together" resultType="com.example.demo.vo.TogetherVo">
+		select * from together where user_id = #{user_id}
+	</select>
+	
+<!-- 내가 쓴 sns 글 파일 -->
+	<select id="search_my_sns_file" resultType="com.example.demo.vo.Pic_Board_FileVo">
+		select * from pic_board_file
+	</select>
+	
+<!-- 	비밀번호 변경 -->
+	<update id="update_pwd">
+		update member_info set pwd=#{pwd2} where user_id = #{user_id} and pwd = #{pwd} 
+	</update>
+<!-- 	나의 반려동물 리스트  -->
+	<select id="search_my_animal" resultType="com.example.demo.vo.Animal_infoVo">
+		select * from animal_info where user_id = #{user_id}
+	</select>
+	
+<!-- 	반려동물 정보 수정 -->
+	<update id="update_animal">
+		update animal_info set pet_date = #{pet_date}, pet_type = #{pet_type}, pet_pic = #{pet_pic}, pet_name=#{pet_name} where pet_no = #{pet_no} and user_id = #{user_id}
+	</update>
+	
+<!-- 	반려동물 상세보기 -->
+	<select id="detail_animal" resultType="com.example.demo.vo.Animal_infoVo">
+		select * from animal_info where user_id = #{user_id} and pet_no = #{pet_no}
+	</select>
+	
+<!-- 	반려동물 정보 삭제 -->
+	<delete id="delete_animal">
+		delete animal_info where user_id = #{user_id} and pet_no = #{pet_no}
+	</delete>
+	
+<!-- 	동물사진 삭제 -->
+	<update id="delete_animal_pic">
+		update animal_info set pet_pic = '' where user_id = #{user_id} and pet_no = #{pet_no}
+	</update>
+	
+<!-- 	사람사진 삭제 -->
+	<update id="delete_people_pic">
+		update member_info set fname = '' where user_id = #{user_id}
+	</update>
+
+<!-- 결제 정보 -->
+	<select id="search_pay" resultType="com.example.demo.vo.PaymentVo">
+		select * from payment where user_id = #{user_id}
+	</select>
+</mapper>
