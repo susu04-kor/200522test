@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.web.multipart.MultipartFile;
 
 import lombok.Data;
 import lombok.Getter;
@@ -86,6 +87,7 @@ private static final long serialVersionUID = 1L;
 	private String email;
 	private String pwd2;
 	
+	MultipartFile uploadfile;
 	
 	public MemberInfoVo(
 			String user_id, String pwd, String tel, String birth, String name, String address, String gender,
