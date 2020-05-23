@@ -150,6 +150,7 @@ $(function(){
 	<hr>
 	<form id="insertForm" method="post" enctype="multipart/form-data">
 <%-- 	<input type="hidden" name="board_no" value="${no}"> --%>
+	<input type="hidden" id="token" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 	<table width="100%">
 		<tr>
 			<td>제목</td><td> <input type="text" name="board_title" required="required" style="width:650px"></td>
