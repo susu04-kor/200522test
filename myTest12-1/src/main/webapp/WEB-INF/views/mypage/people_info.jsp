@@ -14,10 +14,16 @@
 <script type="text/javascript" src="https://code.jquery.com/jquery-3.5.0.min.js"></script>
 <script type="text/javascript">
 $(function(){
+
+
+
 	//비밀번호 변경창
 	$("#update_pwd").click(function(){
 		$("#u_p_form").css({"display":"block"});
 		$("#o_from").css({"display":"none"});
+
+
+
 		//비밀번호 변경 버튼
 		$("#up_btn").click(function(){
 			$("#u_p_form").css({"display":"none"});
@@ -29,10 +35,46 @@ $(function(){
 				}});
 			});
 		});
+	
+		
+	/*	
+	//비밀번호 변경창
+	$("#update_pwd").click(function(){
+		$("#u_p_form").css({"display":"block"});
+		$("#o_from").css({"display":"none"});
 
-	
-	
+		
+
+		//비밀번호 변경 버튼
+		$("#up_btn").click(function(){
+			$.ajax({
+				url: "/join/passCheck",
+				type: "POST",
+				dataType: "json",
+				data: $("#u_p_form").serializeArray(),
+				success: function(data) {
+					if(data==true){
+						if(confirm("비밀번호를 변경하시겠습니까?")){
+								$("#u_p_form").css({"display":"none"});
+								var data = $("#update_pwd_form").serialize();
+								$.ajax("/mypage/update_pwd",{data:data,success:function(re){
+									alert("비밀번호가 변경됐습니다");
+									$("#u_p_form").css({"display":"none"});
+									$("#o_from").css({"display":"block"});
+									}});
+								})
+							}
+						}else{
+							alert("비밀번호가 틀렸습니다.");
+							return; //false - 내일 실험해보자 false - 이거 기반으로 회원가입도 가입버튼 수정해보자;
+							}
+					}	
+			})
+*/
+			
 });
+
+
 
 $(document).ready(function(){
 		$("#submit").on("click", function(){
@@ -67,9 +109,11 @@ $(document).ready(function(){
 	<input type="hidden" id="token" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 		아이디 <input type="text" value="${m.user_id }" readonly="readonly" name="user_id"><br>
 		닉네임 <input type="text" value="${m.nick_name }" name="nick_name"><br>
-		비밀번호를 입력하셔야 정보를 수정할수있습니다<br>
+		비밀번호를 입력하셔야 정보를 수정할 수 있습니다<br>
 		비밀번호 <input type="text" name="pwd" required="required"><br>
+		
 		<button id="update_pwd">비밀번호 변경</button><br>
+		
 		전화번호 <input type="text" value="${m.tel }" name="tel"><br>
 		<%-- 생일 <input type="text" value="${m.birth }" name="birth"><br> --%>
 		이름 <input type="text" value="${m.name }" name="name"><br>

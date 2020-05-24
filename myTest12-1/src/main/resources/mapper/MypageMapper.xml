@@ -52,7 +52,7 @@
 	
 <!-- 	비밀번호 변경 -->
 	<update id="update_pwd">
-		update member_info set pwd=#{pwd2} where user_id = #{user_id} and pwd = #{pwd} 
+		update member_info set pwd=#{pwd2} where user_id = #{user_id} <!--  and pwd = #{pwd} --> 
 	</update>
 <!-- 	나의 반려동물 리스트  -->
 	<select id="search_my_animal" resultType="com.example.demo.vo.Animal_infoVo">

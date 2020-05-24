@@ -214,21 +214,7 @@ public class MyPageController {
 		//수정 끝나고 리스트 컨트롤러 호출
 		return "redirect:/mypage/mypage";
 	}
-	
-	//패스워드 체크
-	@NoLogging
-	@RequestMapping(value="/join/passCheck", method=RequestMethod.POST)
-	@ResponseBody
-	public boolean passCheck(MemberInfoVo vo, String user_id) throws Exception {
-		MemberInfoVo m = loginMapperDao.getSelectMemberInfo(user_id);
-		boolean pwdChk = passwordEncoder.matches(vo.getPwd(), m.getPwd());
-		return pwdChk;
-		
-	}
-	
-	
-	
-	
+
 	
 	//내가 작성한 글
 	@RequestMapping("/mypage/board_list")
@@ -314,22 +300,60 @@ public class MyPageController {
 		return "redirect:/MainPage";
 	}
 	
+	//패스워드 체크
+	@NoLogging
+	@RequestMapping(value="/join/passCheck", method=RequestMethod.POST)
+	@ResponseBody
+	public boolean passCheck(MemberInfoVo vo) throws Exception {
+		String user_id = vo.getUser_id();
+		MemberInfoVo m = loginMapperDao.getSelectMemberInfo(user_id);
+		boolean pwdChk = passwordEncoder.matches(vo.getPwd(), m.getPwd());
+		return pwdChk;
+		
+	}
+	
 	//비밀번호 변경
 	@NoLogging
 	@RequestMapping("/mypage/update_pwd")
 	@ResponseBody
-	public String update_pwd(HttpServletRequest request, String o_pwd,String o_user_id) {
-//		System.out.println("AAAAAAAAAAAAAAAAA");
+	public String update_pwd(HttpServletRequest request, MemberInfoVo m, String o_pwd,String o_user_id) {
 		HttpSession session = request.getSession();
 	    Authentication authentication = (Authentication) session.getAttribute("user");
-	    MemberInfoVo user = (MemberInfoVo) authentication.getPrincipal();	
-		MemberInfoVo m = loginMapperDao.getSelectMemberInfo(user.getUser_id());
-	
+	    MemberInfoVo memberInfo = (MemberInfoVo) authentication.getPrincipal();
+
+//		o_user_id = m.getUser_id();
+		memberInfo = loginMapperDao.getSelectMemberInfo(o_user_id);
+		memberInfo.setUser_id(o_user_id);
+		
+		String pwd = memberInfo.getPwd();
+		String pwd2 = m.getPwd2();
+		
+		boolean pwdCheck = passwordEncoder.matches(o_pwd, pwd);
+		if(pwdCheck==true) {
+			 String encPassword = passwordEncoder.encode(pwd2);
+			 memberInfo.setPwd2(encPassword);	
+			
+		}else {
+			return "/mypage/main";
+		}
+		
+		mypageservice.update_pwd(memberInfo);	 
+		return "ok";
+	}
+
+/*	
+	//비밀번호 변경
+	@NoLogging
+	@RequestMapping("/mypage/update_pwd")
+	@ResponseBody
+	public String update_pwd(MemberInfoVo m,String o_pwd,String o_user_id) {
+		
 		m.setPwd(o_pwd);
 		m.setUser_id(o_user_id);
 		mypageservice.update_pwd(m);
 		return "ok";
 	}
+*/	
 	
 	//반려동물 정보 수정폼
 	@NoLogging

@@ -23,7 +23,14 @@ $(function(){
 	$("#widthdraw_btn").click(function(){
 		var ck = confirm("탈퇴하시겠습니까?");
 		if(ck == true){
-			alert("탈퇴");
+			var data = {user_id:$("#user_id").val()};
+// 			alert(data);
+			$.ajax("/mypage/delete_member",{data:data,success:function(re){
+// 				alert(re);
+//				컨트롤러에서 return "/MainPage"; 으로 /MainPage 받아와서 href로 이동
+				window.location.href=re;
+				}});
+// 			alert("탈퇴");
 		}else{
 			
 			}
@@ -70,6 +77,7 @@ $(function(){
 <hr>
 <section id="info">
 	<h2>${myinfo.user_id }(${myinfo.nick_name })님의 정보입니다</h2>
+	<input type="text" id="user_id" value="${myinfo.user_id }"><br>
 	<table>
 		<tr>
 			<td>
